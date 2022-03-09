@@ -17,11 +17,13 @@ def viz():
     #home page for info and navigation
     return render_template("viz.html")
 
-@app.route("/data")
+@app.route("/data", methods=["POST", "GET"])
 def data():
-    #SQL lite connection
-    data = sql_data.query()
-    return jsonify(data)
+    if request.method == "GET":
+        #SQL lite connection
+        data = sql_data.query()
+        print(data)
+        return jsonify(data)
 
 @app.route("/model", methods=["POST", "GET"])
 def model():
@@ -55,12 +57,12 @@ def model():
     prediction_data[features.index(f'Gender_{input_gender}')]=1
     prediction_data[features.index(f'Cancer_Stage_{input_stage}')]=1
     prediction_data[features.index(f'Cancer_Site_{input_site}')]=1
-    prediction_data[features.index(f'Cancer_Type_ {input_type}')]=1
+    prediction_data[features.index(f'Cancer_Type_{input_type}')]=1
 
     pred = prediction_model.predict(np.reshape(np.array(prediction_data),(1,198)))
 
     print(pred)
-    pred_clean = str(pred).replace('[','').replace(']','')
+    pred_clean = str(np.round(pred)).replace('[','').replace(']','')
     #return the prediction
     return render_template("model.html", pred=pred_clean)
 
